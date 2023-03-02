@@ -2,9 +2,10 @@ import { StyleSheet, Text, View, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useIsFocused } from '@react-navigation/native'
 import UiButton from '../../../components/UI/UiButton'
-
+import Loader from '../../../components/UI/Loader'
 const ListStudents = () => {
     const [List, setList] = useState([])
+    const [loding, setloding] = useState(true)
 
     useEffect(() => {
         getStudentList()
@@ -15,6 +16,9 @@ const ListStudents = () => {
             let data = await fetch('https://light-pumps-seal.cyclic.app/DreamCoder/api/student')
             let res = await data.json()
             setList(res.message)
+            if (res) {
+                setloding(false)
+            }
             console.log("=======>", res)
         } catch (err) {
             console.log("err====>", err)
@@ -51,7 +55,7 @@ const ListStudents = () => {
                     country: {item?.country}
                 </Text>
                 <View style={{ flexDirection: "row" }}>
-                    <UiButton text='Delete' style={{ backgroundColor: "red", width: 100 }} loading={true} />
+                    <UiButton text='Delete' style={{ backgroundColor: "red", width: 100 }} />
                     <UiButton text='Edit' style={{ backgroundColor: "green", width: 100 }} />
                 </View>
             </View>
@@ -60,10 +64,12 @@ const ListStudents = () => {
     }
     return (
         <View>
+            <Loader loading={loding} />
             <FlatList
                 data={List}
                 renderItem={renderItem}
             />
+
         </View>
     )
 }
