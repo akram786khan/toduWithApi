@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import Clickable from '../../components/HOC/Clickable'
 const Login = ({ navigation }) => {
     const [email, setemail] = useState('')
+    const [btnloading, setbtnloading] = useState(false)
     const [password, setpassword] = useState('')
     const [errors, seterrors] = useState([])
     const [SignUpData, setSignUpData] = useState({})
@@ -38,6 +39,7 @@ const Login = ({ navigation }) => {
         setchangeLockImage(changeLockImage == iconPath.unlock ? iconPath.lock : iconPath.unlock)
     }
     const LoginWith = async () => {
+        setbtnloading(true)
         console.log("===sdfs")
         let form = {
             email: validators.checkEmail("Email", email),
@@ -69,6 +71,7 @@ const Login = ({ navigation }) => {
                 let res = await results.json()
                 let resdata = await res
                 console.log("data=====resdata==>>", resdata)
+                setbtnloading(false)
                 if (resdata.status == true) {
                     await AsyncStorage.setItem("Token", JSON.stringify(resdata.token))
                     navigation.navigate('DrawerNavigator')
@@ -110,6 +113,7 @@ const Login = ({ navigation }) => {
                 textAlign={"center"}
                 textColor={'blue'}
                 onPress={LoginWith}
+                loading={btnloading}
             />
 
         </FormContainer>

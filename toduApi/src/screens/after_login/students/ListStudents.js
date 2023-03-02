@@ -51,7 +51,7 @@ const ListStudents = () => {
                     country: {item?.country}
                 </Text>
                 <View style={{ flexDirection: "row" }}>
-                    <UiButton text='Delete' style={{ backgroundColor: "red", width: 100 }} />
+                    <UiButton text='Delete' style={{ backgroundColor: "red", width: 100 }} loading={true} />
                     <UiButton text='Edit' style={{ backgroundColor: "green", width: 100 }} />
                 </View>
             </View>
