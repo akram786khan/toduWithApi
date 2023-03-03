@@ -64,6 +64,15 @@ const StackNavigator = () => {
                 }}
             />
             <Screen
+                name="addstudent"
+                getComponent={() =>
+                    require('../screens/after_login/students/AddStudents').default
+                }
+                options={{
+                    ...commonOptions,
+                }}
+            />
+            <Screen
                 name='Login'
                 // use getComponent instead of component for better speed 
                 getComponent={() => require('../screens/before_login/Login').default}

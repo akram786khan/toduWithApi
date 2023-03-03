@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useIsFocused } from '@react-navigation/native'
 import UiButton from '../../../components/UI/UiButton'
 import Loader from '../../../components/UI/Loader'
-const ListStudents = () => {
+const ListStudents = ({ navigation }) => {
     const [List, setList] = useState([])
     const [loding, setloding] = useState(true)
 
@@ -65,6 +65,7 @@ const ListStudents = () => {
     return (
         <View>
             <Loader loading={loding} />
+            <UiButton onPress={() => { navigation.navigate('addstudent') }} text={"add Student"} />
             <FlatList
                 data={List}
                 renderItem={renderItem}
