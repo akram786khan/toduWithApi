@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormContainer from '../../../components/HOC/FormContainer';
 import Input from '../../../components/UI/Input';
 import UiButton from '../../../components/UI/UiButton';
@@ -10,6 +10,7 @@ import Colors from '../../../constants/colors';
 import { validators } from '../../../backend/Validation';
 import { isValidForm } from '../../../backend/validForm';
 import Dropdown from '../../../components/UI/Dropdown';
+import { useIsFocused } from '@react-navigation/native';
 
 const AddStudents = ({ navigation }) => {
     const [name, setname] = useState('');
@@ -21,7 +22,67 @@ const AddStudents = ({ navigation }) => {
     const [country, setcountry] = useState('');
     const [scholl, setscholl] = useState('');
     const [error, seterror] = useState({});
+    const [subjectData, setsubjectData] = useState([])
+    const [coursedata, setcoursedata] = useState([]);
+    const [countrydata, setcountrydata] = useState([]);
+    const [CountrySchool, setCountrySchool] = useState([])
+    useEffect(() => {
+        getCourses();
+        getCountry();
+    }, [useIsFocused()])
+    const getCourses = async () => {
+        try {
+            let results = await fetch(
+                'https://light-pumps-seal.cyclic.app/DreamCoder/api/Course'
+            );
 
+            let res = await results.json();
+            let resdata = await res;
+            console.log("==course  ==== resdata==>", resdata);
+            let data = resdata.message;
+
+            let arr = []
+            let abc = "hello" + "*"
+            data.map((item, index) => {
+                let obj = {
+                    label: item.CourseName,
+                    value: item.CourseName + "*" + item._id,
+                    color: "black"
+                }
+                arr.push(obj)
+            })
+            setcoursedata(arr)
+            console.log("==arrr===>>", arr)
+        } catch (err) {
+            console.log("==err==>", err);
+        }
+    }
+    const getCountry = async () => {
+        try {
+            let results = await fetch(
+                'https://light-pumps-seal.cyclic.app/DreamCoder/api/Country'
+            );
+
+            let res = await results.json();
+            let resdata = await res;
+            console.log("==course  ==== resdata==>", resdata);
+            let data = resdata.message;
+
+            let arr = []
+            data.map((item, index) => {
+                let obj = {
+                    label: item.CountryCode + " " + item.CountryName,
+                    value: item.CountryName + "*" + item._id,
+                    color: "black"
+                }
+                arr.push(obj)
+            })
+            setcountrydata(arr)
+            console.log("==arrr===>>", arr)
+        } catch (err) {
+            console.log("==err==>", err);
+        }
+    }
     const AddWithValidationData = async () => {
         const form = {
             Name: validators.checkRequire('Students Name', name),
@@ -71,6 +132,67 @@ const AddStudents = ({ navigation }) => {
             }
         }
     };
+    const setSubjets = async (idName) => {
+
+        let newData = idName.split("*")
+        setcourse(newData[0])
+        try {
+            let results = await fetch(
+                `https://light-pumps-seal.cyclic.app/DreamCoder/api/Course/${newData[1]}`
+            );
+
+            let res = await results.json();
+            let resdata = await res;
+            console.log("==subject  ==== resdata==>", resdata);
+            let data = resdata.Subjects;
+
+            let arr = []
+            data.map((item, index) => {
+                let obj = {
+                    label: item,
+                    value: item,
+                    color: "black"
+                }
+                arr.push(obj)
+            })
+            setsubjectData(arr)
+            console.log("==arrr===>>", arr)
+        } catch (err) {
+            console.log("==err=abc=>", err);
+        }
+        console.log("=======newData==>", newData)
+    }
+    const setcountryfunction = async (idName) => {
+
+        let newData = idName.split("*")
+        setcountry(newData[0])
+        console.log("====newData========>>>", newData)
+        try {
+            let results = await fetch(
+                `https://light-pumps-seal.cyclic.app/DreamCoder/api/Country/${newData[1]}`
+            );
+
+            let res = await results.json();
+            let resdata = await res;
+            console.log("==subject  ==== resdata==>", resdata);
+            let data = resdata.SchoolNames;
+
+            let arr = []
+            data.map((item, index) => {
+                let obj = {
+                    label: item,
+                    value: item,
+                    color: "black"
+                }
+                arr.push(obj)
+            })
+            setCountrySchool(arr)
+            console.log("==arrr===>>", arr)
+        } catch (err) {
+            console.log("==err=abc=>", err);
+        }
+        console.log("=======newData==>", newData)
+    }
     return (
         <FormContainer style={styles.MainContainer}>
             <Clickable style={styles.Container1}>
@@ -104,12 +226,9 @@ const AddStudents = ({ navigation }) => {
                 />
 
                 <View style={{ borderWidth: 1, borderColor: "black", overflow: 'hidden', borderRadius: 10 }}>
-                    <Dropdown item={[{ label: "Basic Course", value: "Basic Course", color: "black" },
-                    { label: "Frountend Course", value: "Frountend Course", color: "black" },
-                    { label: "Backend Course", value: "Backend Course", color: "black" }
-                    ]}
+                    <Dropdown item={coursedata}
                         placeholder={"Students Course..."}
-                        onChange={(e) => setcourse(e)}
+                        onChange={(e) => setSubjets(e)}
                     />
                 </View>
                 {/* <Input
@@ -119,10 +238,7 @@ const AddStudents = ({ navigation }) => {
           error={error?.Subject}
         /> */}
                 <View style={{ borderWidth: 1, borderColor: "black", overflow: 'hidden', borderRadius: 10, marginVertical: 20 }}>
-                    <Dropdown item={[{ label: "HTML", value: "HTML", color: "black" },
-                    { label: "CSS", value: "CSS", color: "black" },
-                    { label: "JAVA", value: "JAVA", color: "black" }
-                    ]}
+                    <Dropdown item={subjectData}
                         placeholder={"Student Subject"}
                         onChange={(e) => setsubject(e)}
                     />
@@ -147,18 +263,13 @@ const AddStudents = ({ navigation }) => {
                 </View>
 
                 <View style={{ borderWidth: 1, borderColor: "black", overflow: 'hidden', borderRadius: 10, marginVertical: 20 }}>
-                    <Dropdown item={[{ label: "094", value: "094", color: "black" },
-                    { label: "800", value: "800", color: "black" },
-                    ]}
+                    <Dropdown item={countrydata}
                         placeholder={"Country"}
-                        onChange={(e) => setcountry(e)}
+                        onChange={(e) => setcountryfunction(e)}
                     />
                 </View>
                 <View style={{ borderWidth: 1, borderColor: "black", overflow: 'hidden', borderRadius: 10, marginVertical: 20 }}>
-                    <Dropdown item={[{ label: "MDS", value: "MDS", color: "black" },
-                    { label: "MKS", value: "MKS", color: "black" },
-                    { label: "SNS", value: "SNS", color: "black" },
-                    ]}
+                    <Dropdown item={CountrySchool}
                         placeholder={"Students School"}
                         onChange={(e) => setscholl(e)}
                     />
